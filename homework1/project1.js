@@ -2,42 +2,46 @@
 // fgImg is the foreground image.
 // fgOpac is the opacity of the foreground image.
 // fgPos is the position of the foreground image in pixels. It can be negative and (0,0) means the top-left pixels of the foreground and background are aligned.
-function composite( bgImg, fgImg, fgOpac, fgPos ){
-    const fgData = fgImg.data;
-    const bgData = bgImg.data;
-
-    const fgWidth = fgImg.width;
-    const fgHeight = fgImg.width;
+function composite(bgImg, fgImg, fgOpac, fgPos) {
     const bgWidth = bgImg.width;
-    const bgHeight = bgImg.width;
-
-    for (let fy = 0; fy<fgWidth;fy++){
-        for (let fx = 0; fx<fgHeight;fx++){
-            // Calculate corresponding background coordinates
+    const bgHeight = bgImg.height;
+    const fgWidth = fgImg.width;
+    const fgHeight = fgImg.height;
+    
+    const bgData = bgImg.data;
+    const fgData = fgImg.data;
+    
+    const hasAlpha = fgData.length === fgWidth * fgHeight * 4; // Controllo se ha il canale Alpha
+    
+    for (let fy = 0; fy < fgHeight; fy++) {
+        for (let fx = 0; fx < fgWidth; fx++) {
+            // Calcolo coordinate nel background
             const bx = fx + fgPos.x;
             const by = fy + fgPos.y;
             
-            // Ignore pixels outside the background
+            // Ignoro pixel fuori dal background
             if (bx < 0 || bx >= bgWidth || by < 0 || by >= bgHeight) {
                 continue;
             }
             
-            // Compute indices in the image data arrays
+            // Indici nei dati dell'immagine
             const fgIndex = (fy * fgWidth + fx) * 4;
             const bgIndex = (by * bgWidth + bx) * 4;
             
-            // Extract foreground pixel color and alpha
+            // Estraggo i colori del foreground
             const fgR = fgData[fgIndex];
             const fgG = fgData[fgIndex + 1];
             const fgB = fgData[fgIndex + 2];
-            const fgA = (fgData[fgIndex + 3] / 255) * fgOpac;
+
+            // Se ha il canale alpha lo uso, altrimenti assumo opacità massima
+            const fgA = hasAlpha ? (fgData[fgIndex + 3] / 255) * fgOpac : fgOpac;
             
-            // Extract background pixel color
+            // Estraggo i colori del background
             const bgR = bgData[bgIndex];
             const bgG = bgData[bgIndex + 1];
             const bgB = bgData[bgIndex + 2];
             
-            // Apply alpha blending formula
+            // Applico l'alpha blending
             const alpha = fgA;
             const invAlpha = 1 - alpha;
             
@@ -47,3 +51,4 @@ function composite( bgImg, fgImg, fgOpac, fgPos ){
         }
     }
 }
+
