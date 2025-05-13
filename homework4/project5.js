@@ -1,5 +1,3 @@
-
- 
 // This function takes the translation and two rotation angles (in radians) as input arguments.
 // The two rotations are applied around x and y axes.
 // It returns the combined 4x4 transformation matrix as an array in column-major order.
